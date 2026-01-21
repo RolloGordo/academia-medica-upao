@@ -13,6 +13,7 @@ import { Plus, Search, Pencil, Trash2, UserPlus } from 'lucide-react'
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog'
 import { toast } from 'sonner'
 import type { UserProfile } from '@/types'
+import type { Database } from '@/types/database.types'
 
 export default function UsuariosPage() {
   const [users, setUsers] = useState<UserProfile[]>([])
@@ -90,8 +91,9 @@ export default function UsuariosPage() {
   const toggleUserStatus = async (userId: string, currentStatus: boolean) => {
     try {
       const newStatus = !currentStatus
-      const { error } = await supabase
-        .from('user_profiles')
+      
+      const { error } = await (supabase
+        .from('user_profiles') as any)
         .update({ active: newStatus })
         .eq('id', userId)
 
