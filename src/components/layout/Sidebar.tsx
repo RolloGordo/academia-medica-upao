@@ -159,7 +159,7 @@ export function Sidebar({ user }: SidebarProps) {
         {/* Footer */}
         <div className="px-6 pb-4 text-xs text-gray-500">
           <p>© 2026 SynaMed</p>
-          <p>Academia Médica UPAO</p>
+          <p>Academia Médica </p>
         </div>
       </div>
     </div>
