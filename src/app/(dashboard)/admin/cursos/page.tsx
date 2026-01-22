@@ -41,7 +41,7 @@ export default function CursosPage() {
       setLoading(true)
       const { data, error } = await supabase
         .from('courses')
-        .select('*')
+        .select('id, name, description, code, cycle, credits, color, active, created_at')
         .order('cycle', { ascending: true })
         .order('name', { ascending: true })
 

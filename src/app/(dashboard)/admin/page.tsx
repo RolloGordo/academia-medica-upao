@@ -30,36 +30,37 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      // Contar estudiantes
-      const { count: studentsCount } = await supabase
-        .from('user_profiles')
-        .select('*', { count: 'exact', head: true })
-        .eq('role', 'estudiante')
-        .eq('active', true)
+      setLoading(true)
 
-      // Contar cursos
-      const { count: coursesCount } = await supabase
-        .from('courses')
-        .select('*', { count: 'exact', head: true })
-        .eq('active', true)
-
-      // Contar videos
-      const { count: videosCount } = await supabase
-        .from('videos')
-        .select('*', { count: 'exact', head: true })
-        .eq('active', true)
-
-      // Contar inscripciones activas
-      const { count: enrollmentsCount } = await supabase
-        .from('enrollments')
-        .select('*', { count: 'exact', head: true })
-        .eq('active', true)
+      // Usar Promise.all para hacer todas las consultas en paralelo
+      const [studentsResult, coursesResult, videosResult, enrollmentsResult] = await Promise.all([
+        supabase
+          .from('user_profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('role', 'estudiante')
+          .eq('active', true),
+        
+        supabase
+          .from('courses')
+          .select('id', { count: 'exact', head: true })
+          .eq('active', true),
+        
+        supabase
+          .from('videos')
+          .select('id', { count: 'exact', head: true })
+          .eq('active', true),
+        
+        supabase
+          .from('enrollments')
+          .select('id', { count: 'exact', head: true })
+          .eq('active', true)
+      ])
 
       setStats({
-        totalStudents: studentsCount || 0,
-        totalCourses: coursesCount || 0,
-        totalVideos: videosCount || 0,
-        activeEnrollments: enrollmentsCount || 0,
+        totalStudents: studentsResult.count || 0,
+        totalCourses: coursesResult.count || 0,
+        totalVideos: videosResult.count || 0,
+        activeEnrollments: enrollmentsResult.count || 0,
       })
     } catch (error) {
       console.error('Error al cargar estadísticas:', error)

@@ -104,16 +104,16 @@ export function UploadVideoDialog({ open, onOpenChange, courses, onSuccess }: Up
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
       const filePath = `${formData.courseId}/${fileName}`
 
-      // Simular progreso de subida (Supabase no proporciona progreso real)
+      console.log('Iniciando subida de video:', filePath)
+
+      // Simular progreso mientras se sube
+      let progress = 0
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval)
-            return 90
-          }
-          return prev + 10
-        })
-      }, 200)
+        progress += 5
+        if (progress <= 85) {
+          setUploadProgress(progress)
+        }
+      }, 300)
 
       // Subir archivo a Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -124,16 +124,22 @@ export function UploadVideoDialog({ open, onOpenChange, courses, onSuccess }: Up
         })
 
       clearInterval(progressInterval)
-      setUploadProgress(95)
 
       if (uploadError) {
+        console.error('Error al subir archivo:', uploadError)
         throw uploadError
       }
+
+      console.log('Archivo subido exitosamente:', uploadData)
+      setUploadProgress(90)
 
       // Obtener URL pública del video
       const { data: urlData } = supabase.storage
         .from('videos')
         .getPublicUrl(filePath)
+
+      console.log('URL pública generada:', urlData.publicUrl)
+      setUploadProgress(95)
 
       // Crear registro en la base de datos
       const { error: dbError } = await (supabase
@@ -145,17 +151,19 @@ export function UploadVideoDialog({ open, onOpenChange, courses, onSuccess }: Up
           video_url: urlData.publicUrl,
           week: formData.week,
           file_size: selectedFile.size,
-          duration: 0, // Se puede calcular después con metadata
+          duration: 0,
           uploaded_by: user.id,
           active: true,
         })
 
       if (dbError) {
+        console.error('Error al crear registro en BD:', dbError)
         // Si falla la BD, eliminar el archivo subido
         await supabase.storage.from('videos').remove([filePath])
         throw dbError
       }
 
+      console.log('Registro creado en BD exitosamente')
       setUploadProgress(100)
       
       toast.success('Video subido correctamente')
@@ -169,20 +177,20 @@ export function UploadVideoDialog({ open, onOpenChange, courses, onSuccess }: Up
       })
       setSelectedFile(null)
       
-      // Pequeño delay para mostrar el 100%
+      // Delay para mostrar el 100%
       setTimeout(() => {
-        onOpenChange(false)
         setUploadProgress(0)
         setUploading(false)
+        setLoading(false)
+        onOpenChange(false)
         onSuccess()
-      }, 500)
+      }, 1000)
       
     } catch (error: any) {
-      console.error('Error al subir video:', error)
+      console.error('Error completo al subir video:', error)
       toast.error(error.message || 'Error al subir video')
       setUploadProgress(0)
       setUploading(false)
-    } finally {
       setLoading(false)
     }
   }

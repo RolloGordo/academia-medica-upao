@@ -54,27 +54,33 @@ export default function VideosPage() {
       setLoading(true)
 
       // Cargar cursos
-      const { data: coursesData } = await supabase
+      const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
         .select('*')
         .eq('active', true)
         .order('name')
 
-      setCourses(coursesData || [])
+      if (coursesError) throw coursesError
+      const courses = (coursesData as Course[]) || []
+      setCourses(courses)
 
-      // Cargar videos con información del curso
-      const { data: videosData, error } = await supabase
+      // Cargar videos
+      const { data: videosData, error: videosError } = await supabase
         .from('videos')
-        .select(`
-          *,
-          course:courses(*)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (videosError) throw videosError
 
-      setVideos(videosData || [])
-      setFilteredVideos(videosData || [])
+      // Mapear cursos manualmente (más eficiente)
+      const videos = (videosData as Video[]) || []
+      const videosWithCourse: VideoWithCourse[] = videos.map(video => ({
+        ...video,
+        course: courses.find(c => c.id === video.course_id)
+      }))
+
+      setVideos(videosWithCourse)
+      setFilteredVideos(videosWithCourse)
     } catch (error) {
       console.error('Error al cargar datos:', error)
       toast.error('Error al cargar videos')
