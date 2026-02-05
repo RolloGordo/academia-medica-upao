@@ -33,10 +33,14 @@ export function useAuth(): UseAuthReturn {
     // Escuchar cambios en la autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth event:', event)
         if (event === 'SIGNED_IN' && session) {
           await loadUser()
         } else if (event === 'SIGNED_OUT') {
           setUser(null)
+        } else if (event === 'TOKEN_REFRESHED') {
+          // No recargar usuario en refresh de token
+          console.log('Token refreshed')
         }
       }
     )

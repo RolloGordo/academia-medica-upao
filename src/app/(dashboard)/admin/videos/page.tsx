@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Plus, Search, Trash2, Play, Video as VideoIcon } from 'lucide-react'
 import { UploadVideoDialog } from '@/components/admin/UploadVideoDialog'
+import { VideoPlayerDialog } from '@/components/admin/VideoPlayerDialog'
 import { toast } from 'sonner'
 import type { Video, Course } from '@/types'
 import { formatDuration, formatFileSize } from '@/lib/utils'
@@ -27,6 +28,7 @@ export default function VideosPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCourse, setSelectedCourse] = useState<string>('all')
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
+  const [playingVideo, setPlayingVideo] = useState<Video | null>(null)
 
   useEffect(() => {
     loadData()
@@ -61,8 +63,7 @@ export default function VideosPage() {
         .order('name')
 
       if (coursesError) throw coursesError
-      const courses = (coursesData as Course[]) || []
-      setCourses(courses)
+      setCourses(coursesData || [])
 
       // Cargar videos
       const { data: videosData, error: videosError } = await supabase
@@ -73,10 +74,11 @@ export default function VideosPage() {
       if (videosError) throw videosError
 
       // Mapear cursos manualmente (más eficiente)
-      const videos = (videosData as Video[]) || []
-      const videosWithCourse: VideoWithCourse[] = videos.map(video => ({
+      const videosArray = (videosData as Video[]) || []
+      const coursesArray = (coursesData as Course[]) || []
+      const videosWithCourse: VideoWithCourse[] = videosArray.map(video => ({
         ...video,
-        course: courses.find(c => c.id === video.course_id)
+        course: coursesArray.find((c: Course) => c.id === video.course_id)
       }))
 
       setVideos(videosWithCourse)
@@ -125,9 +127,34 @@ export default function VideosPage() {
     }
   }
 
-  const getVideoUrl = (video: Video) => {
-    // Generar URL pública temporal para preview
-    return video.video_url
+  const getVideoUrl = async (video: Video) => {
+    try {
+      // Extraer el path del video desde la URL
+      const urlParts = video.video_url.split('/videos/')
+      if (urlParts.length < 2) return video.video_url
+
+      const filePath = urlParts[1]
+
+      // Crear URL firmada que expira en 1 hora
+      const { data, error } = await supabase.storage
+        .from('videos')
+        .createSignedUrl(filePath, 3600) // 1 hora
+
+      if (error) {
+        console.error('Error al generar URL firmada:', error)
+        return video.video_url
+      }
+
+      return data.signedUrl
+    } catch (error) {
+      console.error('Error al obtener URL del video:', error)
+      return video.video_url
+    }
+  }
+
+  const handlePlayVideo = async (video: Video) => {
+    const url = await getVideoUrl(video)
+    window.open(url, '_blank')
   }
 
   return (
@@ -266,7 +293,7 @@ export default function VideosPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(getVideoUrl(video), '_blank')}
+                      onClick={() => setPlayingVideo(video)}
                     >
                       <Play className="h-4 w-4" />
                     </Button>
@@ -291,6 +318,13 @@ export default function VideosPage() {
         onOpenChange={setIsUploadDialogOpen}
         courses={courses}
         onSuccess={loadData}
+      />
+
+      {/* Dialog de reproductor */}
+      <VideoPlayerDialog
+        video={playingVideo}
+        open={!!playingVideo}
+        onOpenChange={(open) => !open && setPlayingVideo(null)}
       />
     </div>
   )
