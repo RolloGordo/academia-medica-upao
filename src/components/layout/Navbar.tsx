@@ -4,6 +4,7 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,6 +23,11 @@ interface NavbarProps {
 
 export function Navbar({ user }: NavbarProps) {
   const { logout } = useAuth()
+  const router = useRouter()
+
+  const handleNavigateToProfile = () => {
+    router.push(`/${user.role}/perfil`)
+  }
 
   return (
     <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
@@ -49,14 +55,17 @@ export function Navbar({ user }: NavbarProps) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem 
+                className="cursor-pointer"
+                onClick={handleNavigateToProfile}
+              >
                 <User className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="cursor-pointer text-red-600 focus:text-red-600"
-                onClick={logout}
+                onClick={() => logout()}
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Cerrar Sesión</span>
