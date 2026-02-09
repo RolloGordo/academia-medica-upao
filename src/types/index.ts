@@ -36,6 +36,16 @@ export interface AuthUser {
   active: boolean
 }
 
+// Tipo para asignación de docente a curso
+export interface TeacherAssignment {
+  id: string
+  teacher_id: string
+  course_id: string
+  assigned_at: string
+  assigned_by: string | null
+  active: boolean
+}
+
 // Tipo para curso con progreso
 export interface CourseWithProgress extends Course {
   total_videos: number

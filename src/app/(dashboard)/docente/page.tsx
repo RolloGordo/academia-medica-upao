@@ -35,11 +35,28 @@ export default function DocenteDashboard() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Cargar cursos del docente (asumimos que el docente tiene acceso a todos los cursos activos)
-      // En producción, podrías tener una tabla de asignación docente-curso
+      // Cargar asignaciones de cursos del docente
+      const { data: assignmentsData } = await supabase
+        .from('teacher_assignments')
+        .select('course_id')
+        .eq('teacher_id', user.id)
+        .eq('active', true)
+
+      const assignedCourseIds = (assignmentsData as any[] || []).map((a: any) => a.course_id)
+
+      // Si no tiene cursos asignados, mostrar mensaje
+      if (assignedCourseIds.length === 0) {
+        setCourses([])
+        setStats({ totalCourses: 0, totalVideos: 0, totalStudents: 0 })
+        setLoading(false)
+        return
+      }
+
+      // Cargar solo los cursos asignados al docente
       const { data: coursesData } = await supabase
         .from('courses')
         .select('*')
+        .in('id', assignedCourseIds)
         .eq('active', true)
 
       if (!coursesData) return
@@ -50,10 +67,11 @@ export default function DocenteDashboard() {
         .select('id, course_id')
         .eq('uploaded_by', user.id)
 
-      // Cargar inscripciones
+      // Cargar inscripciones solo de sus cursos
       const { data: enrollmentsData } = await supabase
         .from('enrollments')
-        .select('course_id')
+        .select('course_id, user_id')
+        .in('course_id', assignedCourseIds)
         .eq('active', true)
 
       // Calcular estadísticas por curso
@@ -71,10 +89,12 @@ export default function DocenteDashboard() {
       setCourses(coursesWithStats)
 
       // Calcular totales
+      const uniqueStudents = new Set((enrollmentsData as any[] || []).map((e: any) => e.user_id)).size
+      
       setStats({
         totalCourses: coursesWithStats.length,
         totalVideos: (videosData as any[] || []).length,
-        totalStudents: new Set((enrollmentsData as any[] || []).map((e: any) => e.course_id)).size,
+        totalStudents: uniqueStudents,
       })
     } catch (error) {
       console.error('Error al cargar dashboard:', error)
@@ -101,9 +121,9 @@ export default function DocenteDashboard() {
       bgColor: 'bg-purple-50',
     },
     {
-      title: 'Cursos con Estudiantes',
+      title: 'Estudiantes',
       value: stats.totalStudents,
-      description: 'Cursos con inscripciones',
+      description: 'Total en mis cursos',
       icon: Users,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -150,17 +170,21 @@ export default function DocenteDashboard() {
       {/* Mis cursos */}
       <Card>
         <CardHeader>
-          <CardTitle>Mis Cursos</CardTitle>
+          <CardTitle>Mis Cursos Asignados</CardTitle>
           <CardDescription>
-            Cursos disponibles en la plataforma
+            Cursos que te han sido asignados para gestionar
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="text-center py-8 text-gray-500">Cargando cursos...</div>
           ) : courses.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No hay cursos disponibles
+            <div className="text-center py-8">
+              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 font-medium">No tienes cursos asignados</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Contacta al administrador para que te asigne cursos
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

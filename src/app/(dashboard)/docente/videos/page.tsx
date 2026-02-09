@@ -59,10 +59,20 @@ export default function DocenteVideosPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Cargar cursos
+      // Cargar asignaciones de cursos del docente
+      const { data: assignmentsData } = await supabase
+        .from('teacher_assignments')
+        .select('course_id')
+        .eq('teacher_id', user.id)
+        .eq('active', true)
+
+      const assignedCourseIds = (assignmentsData as any[] || []).map((a: any) => a.course_id)
+
+      // Cargar solo los cursos asignados
       const { data: coursesData } = await supabase
         .from('courses')
         .select('*')
+        .in('id', assignedCourseIds)
         .eq('active', true)
         .order('name')
 

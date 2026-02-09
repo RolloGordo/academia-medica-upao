@@ -8,7 +8,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, fullName, role } = body
+    const { email, password, fullName, role, selectedCourses } = body
 
     // Validaciones
     if (!email || !password || !fullName || !role) {
@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Crear usuario con el cliente de servicio (tiene permisos de admin)
+    // Crear usuario con el cliente de servicio
     const serviceClient = createServiceClient()
 
     const { data: authData, error: authError } = await serviceClient.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // Auto-confirmar email
+      email_confirm: true,
     })
 
     if (authError) {
@@ -79,14 +79,30 @@ export async function POST(request: NextRequest) {
 
     if (profileError) {
       console.error('Error al crear perfil:', profileError)
-      
-      // Si falla el perfil, eliminar el usuario de auth
       await serviceClient.auth.admin.deleteUser(authData.user.id)
-      
       return NextResponse.json(
         { error: 'Error al crear perfil de usuario' },
         { status: 500 }
       )
+    }
+
+    // Si es docente, asignar cursos
+    if (role === 'docente' && selectedCourses && selectedCourses.length > 0) {
+      const assignments = selectedCourses.map((courseId: string) => ({
+        teacher_id: authData.user.id,
+        course_id: courseId,
+        assigned_by: user.id,
+        active: true,
+      }))
+
+      const { error: assignmentError } = await serviceClient
+        .from('teacher_assignments')
+        .insert(assignments as any)
+
+      if (assignmentError) {
+        console.error('Error al asignar cursos:', assignmentError)
+        // No fallar completamente, solo avisar
+      }
     }
 
     return NextResponse.json({
