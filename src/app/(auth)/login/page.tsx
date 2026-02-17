@@ -11,7 +11,7 @@ export default function LoginPage() {
         {/* Logo/Título */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            SynaMed
+            MedMind
           </h1>
           <p className="text-gray-600">
             Plataforma educativa para estudiantes de medicina
@@ -23,7 +23,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>© 2026 SynaMed</p>
+          <p>© 2026 MedMind</p>
           <p className="mt-1">Todos los derechos reservados</p>
         </div>
       </div>
@@ -33,6 +33,6 @@ export default function LoginPage() {
 
 // Metadata de la página
 export const metadata = {
-  title: 'Login | SynaMed',
-  description: 'Inicia sesión en la plataforma educativa de SynaMed',
+  title: 'Login | MedMind',
+  description: 'Inicia sesión en la plataforma educativa de MedMind',
 }

@@ -33,10 +33,27 @@ export default function DocenteCursosPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Cargar todos los cursos activos
+      // Cargar asignaciones de cursos del docente
+      const { data: assignmentsData } = await supabase
+        .from('teacher_assignments')
+        .select('course_id')
+        .eq('teacher_id', user.id)
+        .eq('active', true)
+
+      const assignedCourseIds = (assignmentsData as any[] || []).map((a: any) => a.course_id)
+
+      // Si no tiene cursos asignados, mostrar lista vacía
+      if (assignedCourseIds.length === 0) {
+        setCourses([])
+        setLoading(false)
+        return
+      }
+
+      // Cargar solo los cursos asignados al docente
       const { data: coursesData } = await supabase
         .from('courses')
         .select('*')
+        .in('id', assignedCourseIds)
         .eq('active', true)
         .order('cycle')
         .order('name')
@@ -49,10 +66,11 @@ export default function DocenteCursosPage() {
         .select('id, course_id')
         .eq('uploaded_by', user.id)
 
-      // Cargar inscripciones
+      // Cargar inscripciones solo de sus cursos asignados
       const { data: enrollmentsData } = await supabase
         .from('enrollments')
         .select('course_id')
+        .in('course_id', assignedCourseIds)
         .eq('active', true)
 
       // Calcular estadísticas

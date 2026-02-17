@@ -102,7 +102,7 @@ export function Sidebar({ user }: SidebarProps) {
         {/* Logo/Título */}
         <div className="flex items-center flex-shrink-0 px-6">
           <h1 className="text-2xl font-bold text-blue-600">
-            SynaMed
+            MedMind
           </h1>
         </div>
 
@@ -158,7 +158,7 @@ export function Sidebar({ user }: SidebarProps) {
 
         {/* Footer */}
         <div className="px-6 pb-4 text-xs text-gray-500">
-          <p>© 2026 SynaMed</p>
+          <p>© 2026 MedMind</p>
           <p>Academia Médica </p>
         </div>
       </div>
