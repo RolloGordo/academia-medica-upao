@@ -1,5 +1,5 @@
 // src/components/layout/Navbar.tsx
-// Barra superior de navegación
+// Barra superior de navegación - MEJORADA CON COLORES MEDMIND
 
 'use client'
 
@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import type { AuthUser } from '@/types'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, ChevronDown } from 'lucide-react'
 
 interface NavbarProps {
   user: AuthUser
@@ -30,11 +30,11 @@ export function Navbar({ user }: NavbarProps) {
   }
 
   return (
-    <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
+    <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
       <div className="flex-1 px-6 flex justify-between items-center">
         {/* Título de la página (se puede hacer dinámico después) */}
         <div className="flex-1">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] bg-clip-text text-transparent">
             Dashboard
           </h2>
         </div>
@@ -43,28 +43,39 @@ export function Navbar({ user }: NavbarProps) {
         <div className="ml-4 flex items-center md:ml-6">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+              <Button 
+                variant="ghost" 
+                className="relative flex items-center gap-2 hover:bg-purple-50 transition-colors"
+              >
+                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#6B46C1] to-[#5BC0EB] flex items-center justify-center text-white font-semibold text-sm shadow-md">
                   {user.full_name.charAt(0).toUpperCase()}
                 </div>
-                <span className="hidden md:block text-sm font-medium">
+                <span className="hidden md:block text-sm font-medium text-gray-700">
                   {user.full_name}
                 </span>
+                <ChevronDown className="h-4 w-4 text-gray-500" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user.full_name}</p>
+                  <p className="text-xs leading-none text-muted-foreground capitalize">
+                    {user.role === 'estudiante' ? 'Estudiante' : user.role === 'docente' ? 'Docente' : 'Administrador'}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-purple-50"
                 onClick={handleNavigateToProfile}
               >
-                <User className="mr-2 h-4 w-4" />
+                <User className="mr-2 h-4 w-4 text-[#6B46C1]" />
                 <span>Perfil</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer text-red-600 focus:text-red-600"
+                className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50"
                 onClick={() => logout()}
               >
                 <LogOut className="mr-2 h-4 w-4" />

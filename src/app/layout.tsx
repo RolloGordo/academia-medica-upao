@@ -9,7 +9,7 @@ import { Toaster } from 'sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SynaMed | Academia Médica',
+  title: 'MedMind | Academia Médica',
   description: 'Plataforma educativa para estudiantes de medicina',
 }
 

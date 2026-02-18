@@ -1,5 +1,5 @@
 // src/app/(dashboard)/layout.tsx
-// Layout compartido para admin, docente y estudiante
+// Layout compartido para admin, docente y estudiante - CON FONDOS PERSONALIZADOS
 
 'use client'
 
@@ -8,6 +8,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { Navbar } from '@/components/layout/Navbar'
 import { Loader2 } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 export default function DashboardLayout({
   children,
@@ -19,8 +20,14 @@ export default function DashboardLayout({
   // Mostrar loader mientras carga
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50">
+        <div className="text-center">
+          <div className="relative">
+            <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#6B46C1] border-r-transparent"></div>
+            <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full bg-[#6B46C1] opacity-20"></div>
+          </div>
+          <p className="mt-6 text-lg text-gray-700 font-medium">Cargando...</p>
+        </div>
       </div>
     )
   }
@@ -30,8 +37,15 @@ export default function DashboardLayout({
     redirect('/login')
   }
 
+  // Determinar clase de fondo según el rol
+  // Estudiante: Sin fondo (el dashboard tiene su propio fondo animado)
+  // Admin/Docente: Fondo gris tradicional
+  const backgroundClass = user.role === 'estudiante' 
+    ? '' // Sin fondo, cada página lo define
+    : 'bg-gray-50' // Fondo gris para admin/docente
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={cn("min-h-screen", backgroundClass)}>
       {/* Sidebar */}
       <Sidebar user={user} />
 
@@ -41,7 +55,9 @@ export default function DashboardLayout({
         <Navbar user={user} />
 
         {/* Contenido de la página */}
-        <main className="p-6">
+        <main className={cn(
+          user.role === 'estudiante' ? '' : 'p-6'
+        )}>
           {children}
         </main>
       </div>

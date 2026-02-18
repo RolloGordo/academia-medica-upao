@@ -123,3 +123,503 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* src/app/globals.css - REEMPLAZAR LAS ANIMACIONES ANTERIORES CON ESTAS */
+
+/* ============================================
+   ANIMACIONES MEJORADAS PARA MEDMIND
+   ============================================ */
+
+/* Colores personalizados de MedMind */
+:root {
+  --medmind-purple: #6B46C1;
+  --medmind-purple-light: #B8A4D9;
+  --medmind-cyan: #5BC0EB;
+  --medmind-orange: #FDB833;
+  --medmind-purple-dark: #5A3BA0;
+}
+
+/* ============================================
+   ANIMACIONES DE ENTRADA
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Delays de animación más graduales */
+.animation-delay-200 {
+  animation-delay: 200ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-600 {
+  animation-delay: 600ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-700 {
+  animation-delay: 700ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1000ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1500ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2000ms;
+  animation-fill-mode: both;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4000ms;
+  animation-fill-mode: both;
+}
+
+/* ============================================
+   ANIMACIÓN DE BLOBS (FORMAS ORGÁNICAS)
+   ============================================ */
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+/* ============================================
+   ANIMACIÓN DE ONDAS PROMINENTE
+   ============================================ */
+
+@keyframes wave {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-25%) translateY(10px);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes wave-slow {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-15%) translateY(-10px);
+  }
+  100% {
+    transform: translateX(-30%) translateY(0);
+  }
+}
+
+.animate-wave {
+  animation: wave 8s ease-in-out infinite;
+}
+
+.animate-wave-slow {
+  animation: wave-slow 12s ease-in-out infinite;
+}
+
+/* ============================================
+   BOUNCE SUAVE PARA ICONOS
+   ============================================ */
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
+
+/* ============================================
+   PULSO EN BORDES
+   ============================================ */
+
+@keyframes pulse-border {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse-border {
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
+/* ============================================
+   BADGE POP (ANIMACIÓN DE ENTRADA)
+   ============================================ */
+
+@keyframes badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  70% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-badge-pop {
+  animation: badge-pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ============================================
+   EFECTO DE BRILLO EN HOVER
+   ============================================ */
+
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.7s ease;
+}
+
+.card-shine:hover::before {
+  left: 100%;
+}
+
+/* ============================================
+   GLASSMORPHISM
+   ============================================ */
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   SOMBRAS DINÁMICAS
+   ============================================ */
+
+.shadow-purple-soft {
+  box-shadow: 0 4px 20px -5px rgba(107, 70, 193, 0.25);
+}
+
+.shadow-purple {
+  box-shadow: 0 10px 30px -10px rgba(107, 70, 193, 0.35);
+}
+
+.shadow-purple-lg {
+  box-shadow: 0 20px 50px -15px rgba(107, 70, 193, 0.45);
+}
+
+/* ============================================
+   TRANSICIONES SUAVES GLOBALES
+   ============================================ */
+
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Excepciones para elementos que no deben tener transiciones automáticas */
+input,
+textarea,
+select {
+  transition: none;
+}
+
+/* ============================================
+   HOVER EFFECTS MEJORADOS
+   ============================================ */
+
+.hover-lift {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(107, 70, 193, 0.35);
+}
+
+/* ============================================
+   ANIMACIÓN DE SHIMMER (LOADING)
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 2000px 100%;
+  animation: shimmer 2.5s infinite linear;
+}
+
+/* ============================================
+   GRADIENT ANIMATION
+   ============================================ */
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* ============================================
+   PULSE SUAVE PARA ELEMENTOS IMPORTANTES
+   ============================================ */
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* ============================================
+   ROTACIÓN SUAVE
+   ============================================ */
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+/* ============================================
+   FLOAT (FLOTANTE)
+   ============================================ */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADO
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #B8A4D9, #6B46C1);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6B46C1, #5A3BA0);
+}
+
+/* ============================================
+   FOCUS VISIBLE PERSONALIZADO
+   ============================================ */
+
+*:focus-visible {
+  outline: 3px solid rgba(107, 70, 193, 0.5);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   SCROLL SUAVE
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   BACKGROUND PATTERNS
+   ============================================ */
+
+.pattern-dots {
+  background-image: radial-gradient(circle, #6B46C1 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.05;
+}
+
+.pattern-grid {
+  background-image: 
+    linear-gradient(to right, rgba(107, 70, 193, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(107, 70, 193, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ============================================
+   GLOW EFFECTS
+   ============================================ */
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(107, 70, 193, 0.3),
+                0 0 10px rgba(107, 70, 193, 0.2),
+                0 0 15px rgba(107, 70, 193, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(107, 70, 193, 0.5),
+                0 0 20px rgba(107, 70, 193, 0.3),
+                0 0 30px rgba(107, 70, 193, 0.2);
+  }
+}
+
+.glow-purple {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ============================================
+   TEXT GRADIENT
+   ============================================ */
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #6B46C1 0%, #5BC0EB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .animate-blob,
+  .animate-wave,
+  .animate-bounce-slow,
+  .animate-pulse-border,
+  .card-shine::before {
+    animation: none !important;
+  }
+}
