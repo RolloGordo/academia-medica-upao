@@ -1,5 +1,8 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
@@ -601,11 +604,27 @@ html {
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  *,
+  /* Respetar la preferencia de reducir movimiento solo para animaciones pesadas
+     y transiciones globales, pero permitir spinners pequeños (ej. animate-spin)
+     para mantener feedback inmediato en UI. */
+
+  /* Desactivar animaciones largas o llamativas */
+  .animate-blob,
+  .animate-wave,
+  .animate-wave-slow,
+  .animate-float,
+  .animate-rotate-slow,
+  .animate-gradient,
+  .animate-bounce-slow,
+  .animate-pulse-soft,
+  .animate-pulse-border,
+  .animate-blob {
+    animation: none !important;
+  }
+
+  /* Reducir transiciones para pseudo-elementos (menos molesto) */
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

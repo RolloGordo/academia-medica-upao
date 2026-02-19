@@ -6,7 +6,7 @@
 import { useAuth } from '@/hooks/useAuth'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Navbar } from '@/components/layout/Navbar'
-import { Loader2 } from 'lucide-react'
+// import { Loader2 } from 'lucide-react' (removed — no usado)
 import { redirect } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
@@ -56,7 +56,10 @@ export default function DashboardLayout({
 
         {/* Contenido de la página */}
         <main className={cn(
-          user.role === 'estudiante' ? '' : 'p-6'
+          /* Añadimos `pt-16` para compensar la altura del `Navbar` sticky
+             y evitar que el contenido quede detrás. Mantener `p-6` para
+             admin/docente. */
+          user.role === 'estudiante' ? 'pt-16' : 'pt-16 p-6'
         )}>
           {children}
         </main>

@@ -96,7 +96,12 @@ const navigationByRole = {
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
   const navigation = navigationByRole[user.role] || []
-
+  // Determinar el elemento activo preferente: primero coincidencia exacta,
+  // si no hay, usar la coincidencia por prefijo más específica.
+  const activeItem =
+    navigation.find((i) => pathname === i.href) ||
+    navigation.find((i) => pathname.startsWith(i.href + '/')) ||
+    null
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
       <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto shadow-sm">
@@ -134,7 +139,7 @@ export function Sidebar({ user }: SidebarProps) {
         {/* Navegación */}
         <nav className="flex-1 px-3 space-y-1">
           {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+            const isActive = item === activeItem
             const Icon = item.icon
 
             return (

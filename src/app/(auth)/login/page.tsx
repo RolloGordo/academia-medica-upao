@@ -2,7 +2,7 @@
 // Página de inicio de sesión
 
 import { LoginForm } from '@/components/auth/LoginForm'
-import Image from 'next/image'
+// Image import removed — no se está usando en este archivo
 
 export default function LoginPage() {
   return (
