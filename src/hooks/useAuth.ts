@@ -1,5 +1,5 @@
 // src/hooks/useAuth.ts
-// Hook personalizado para manejar autenticación en componentes
+// Hook personalizado para manejar autenticación - CORREGIDO
 
 'use client'
 
@@ -28,42 +28,69 @@ export function useAuth(): UseAuthReturn {
 
   // Cargar usuario al montar el componente
   useEffect(() => {
+    let mounted = true
+
+    const loadUser = async () => {
+      try {
+        const currentUser = await authService.getCurrentUser()
+        if (mounted) {
+          setUser(currentUser)
+        }
+      } catch (error) {
+        console.error('Error al cargar usuario:', error)
+        if (mounted) {
+          setUser(null)
+        }
+      } finally {
+        // ✅ CRÍTICO: Siempre resolver el loading
+        if (mounted) {
+          setLoading(false)
+        }
+      }
+    }
+
     loadUser()
 
     // Escuchar cambios en la autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth event:', event)
+        
+        if (!mounted) return
+
         if (event === 'SIGNED_IN' && session) {
-          await loadUser()
+          try {
+            const currentUser = await authService.getCurrentUser()
+            if (mounted) {
+              setUser(currentUser)
+              setLoading(false)
+            }
+          } catch (error) {
+            console.error('Error al cargar usuario después de login:', error)
+            if (mounted) {
+              setUser(null)
+              setLoading(false)
+            }
+          }
         } else if (event === 'SIGNED_OUT') {
-          setUser(null)
+          if (mounted) {
+            setUser(null)
+            setLoading(false)
+            router.push('/login')
+          }
         } else if (event === 'TOKEN_REFRESHED') {
-          // No recargar usuario en refresh de token
           console.log('Token refreshed')
+          // No recargar usuario en refresh de token
         }
       }
     )
 
+    // ✅ CRÍTICO: Cleanup para evitar memory leaks
     return () => {
+      mounted = false
       subscription.unsubscribe()
     }
-  }, [])
-
-  /**
-   * Carga la información del usuario actual
-   */
-  const loadUser = async () => {
-    try {
-      const currentUser = await authService.getCurrentUser()
-      setUser(currentUser)
-    } catch (error) {
-      console.error('Error al cargar usuario:', error)
-      setUser(null)
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [router])
 
   /**
    * Inicia sesión
@@ -77,6 +104,7 @@ export function useAuth(): UseAuthReturn {
         setUser(response.user)
         // Redirigir según el rol
         router.push(`/${response.user.role}`)
+        router.refresh() // ✅ Refresh para limpiar cache
         return { success: true }
       }
 
@@ -85,11 +113,13 @@ export function useAuth(): UseAuthReturn {
         error: response.error || 'Error al iniciar sesión',
       }
     } catch (error) {
+      console.error('Error en login:', error)
       return {
         success: false,
         error: 'Error inesperado',
       }
     } finally {
+      // ✅ CRÍTICO: Siempre resolver el loading
       setLoading(false)
     }
   }
@@ -103,9 +133,15 @@ export function useAuth(): UseAuthReturn {
       await authService.logout()
       setUser(null)
       router.push('/login')
+      router.refresh() // ✅ Refresh para limpiar cache
     } catch (error) {
       console.error('Error al cerrar sesión:', error)
+      // Incluso si falla, redirigir al login
+      setUser(null)
+      router.push('/login')
+      router.refresh()
     } finally {
+      // ✅ CRÍTICO: Siempre resolver el loading
       setLoading(false)
     }
   }

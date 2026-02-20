@@ -1,5 +1,5 @@
 // src/components/layout/Navbar.tsx
-// Barra superior de navegación - MEJORADA CON COLORES MEDMIND
+// Barra superior de navegación - CORREGIDA con z-index alto
 
 'use client'
 
@@ -30,9 +30,9 @@ export function Navbar({ user }: NavbarProps) {
   }
 
   return (
-    <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+    <div className="sticky top-0 z-50 flex-shrink-0 flex h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
       <div className="flex-1 px-6 flex justify-between items-center">
-        {/* Título de la página (se puede hacer dinámico después) */}
+        {/* Título de la página */}
         <div className="flex-1">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] bg-clip-text text-transparent">
             Dashboard
