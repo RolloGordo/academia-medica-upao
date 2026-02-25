@@ -26,8 +26,8 @@ interface VideoItem {
   title: string
   description: string | null
   duration: number
-  week_number: number
-  order_in_week: number
+  week: number
+  order_index: number
   thumbnail_url: string | null
   completed: boolean
   last_position: number
@@ -35,7 +35,7 @@ interface VideoItem {
 }
 
 interface WeekVideos {
-  week_number: number
+  week: number
   videos: VideoItem[]
 }
 
@@ -98,8 +98,8 @@ export default function CursoIndividualPage() {
         .select('*')
         .eq('course_id', courseId)
         .eq('active', true)
-        .order('week_number', { ascending: true })
-        .order('order_in_week', { ascending: true })
+        .order('week', { ascending: true })
+        .order('order_index', { ascending: true })
       ) as any
 
       // Obtener progreso del estudiante
@@ -121,8 +121,8 @@ export default function CursoIndividualPage() {
           title: video.title,
           description: video.description,
           duration: video.duration || 0,
-          week_number: video.week_number || 1,
-          order_in_week: video.order_in_week || 0,
+          week: video.week || 1,
+          order_index: video.order_index || 0,
           thumbnail_url: video.thumbnail_url,
           completed: progress?.completed || false,
           last_position: progress?.last_position || 0,
@@ -133,18 +133,18 @@ export default function CursoIndividualPage() {
       // Organizar videos por semana
       const videosByWeek: { [key: number]: VideoItem[] } = {}
       videosWithProgress.forEach(video => {
-        if (!videosByWeek[video.week_number]) {
-          videosByWeek[video.week_number] = []
+        if (!videosByWeek[video.week]) {
+          videosByWeek[video.week] = []
         }
-        videosByWeek[video.week_number].push(video)
+        videosByWeek[video.week].push(video)
       })
 
       const weeklyData: WeekVideos[] = Object.keys(videosByWeek)
         .map(week => ({
-          week_number: parseInt(week),
+          week: parseInt(week),
           videos: videosByWeek[parseInt(week)]
         }))
-        .sort((a, b) => a.week_number - b.week_number)
+        .sort((a, b) => a.week - b.week)
 
       setWeeklyVideos(weeklyData)
 
@@ -332,7 +332,7 @@ export default function CursoIndividualPage() {
         <div className="space-y-8">
           {weeklyVideos.map((week, weekIndex) => (
             <div 
-              key={week.week_number}
+              key={week.week}
               className="animate-fade-in-up"
               style={{ animationDelay: `${(weekIndex + 4) * 100}ms` }}
             >
@@ -341,7 +341,7 @@ export default function CursoIndividualPage() {
                   <BookOpen className="h-5 w-5 text-white" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900">
-                  Semana {week.week_number}
+                  Semana {week.week}
                 </h2>
                 <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent" />
               </div>
