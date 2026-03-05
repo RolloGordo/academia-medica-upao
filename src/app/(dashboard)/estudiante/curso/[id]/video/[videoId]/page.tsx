@@ -1,40 +1,35 @@
 // src/app/(dashboard)/estudiante/curso/[id]/video/[videoId]/page.tsx
-// Reproductor de video - VERSIÓN CORREGIDA
+// VERSIÓN CON PLAYER HTML5 NATIVO (más compatible)
 
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import dynamic from 'next/dynamic'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
 import { supabase } from '@/lib/supabase/client'
 import { 
   ArrowLeft,
   PlayCircle,
+  PauseCircle,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   BookOpen,
-  Clock,
   Video as VideoIcon,
-  Loader2,
   Volume2,
   VolumeX,
   Maximize,
-  Settings
+  SkipBack,
+  SkipForward
 } from 'lucide-react'
-
-// Importar ReactPlayer dinámicamente para evitar SSR issues
-const ReactPlayer: any = dynamic(() => import('react-player'), { ssr: false })
 
 interface VideoData {
   id: string
   title: string
   description: string | null
   video_url: string
+  signed_url: string
   duration: number
   week: number
   order_index: number
@@ -77,11 +72,12 @@ export default function VideoPlayerPage() {
   const [volume, setVolume] = useState(0.8)
   const [muted, setMuted] = useState(false)
   const [playbackRate, setPlaybackRate] = useState(1)
-  const [played, setPlayed] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
   const [seeking, setSeeking] = useState(false)
-  const [duration, setDuration] = useState(0) // ✅ NUEVO: guardar duración aquí
   
-  const playerRef = useRef<any>(null)
+  // ✅ REF para el video HTML5 nativo
+  const videoRef = useRef<HTMLVideoElement>(null)
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -91,7 +87,6 @@ export default function VideoPlayerPage() {
     }
 
     return () => {
-      // Guardar progreso al salir
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current)
       }
@@ -114,11 +109,40 @@ export default function VideoPlayerPage() {
     }
   }, [playing, userId])
 
+  const getSignedVideoUrl = async (videoUrl: string): Promise<string> => {
+    try {
+      console.log('🔑 Generando URL firmada para:', videoUrl)
+
+      const urlParts = videoUrl.split('/videos/')
+      if (urlParts.length < 2) {
+        console.log('⚠️ No se pudo extraer path, usando URL original')
+        return videoUrl
+      }
+
+      const filePath = urlParts[1]
+      console.log('📁 Path del archivo:', filePath)
+
+      const { data, error } = await supabase.storage
+        .from('videos')
+        .createSignedUrl(filePath, 3600)
+
+      if (error) {
+        console.error('❌ Error al generar URL firmada:', error)
+        return videoUrl
+      }
+
+      console.log('✅ URL firmada generada:', data.signedUrl)
+      return data.signedUrl
+    } catch (error) {
+      console.error('❌ Error al obtener URL del video:', error)
+      return videoUrl
+    }
+  }
+
   const loadVideoData = async () => {
     try {
       setLoading(true)
 
-      // Obtener usuario actual
       const { data: userData } = await supabase.auth.getUser() as any
       const user = userData?.user
       if (!user) {
@@ -127,7 +151,6 @@ export default function VideoPlayerPage() {
       }
       setUserId(user.id)
 
-      // Obtener información del video
       const { data: videoData, error: videoError } = await ((supabase
         .from('videos') as any)
         .select(`
@@ -148,11 +171,14 @@ export default function VideoPlayerPage() {
         return
       }
 
+      const signedUrl = await getSignedVideoUrl(videoData.video_url)
+
       setVideo({
         id: videoData.id,
         title: videoData.title,
         description: videoData.description,
         video_url: videoData.video_url,
+        signed_url: signedUrl,
         duration: videoData.duration || 0,
         week: videoData.week || 1,
         order_index: videoData.order_index || 0,
@@ -162,10 +188,6 @@ export default function VideoPlayerPage() {
         course_color: videoData.courses?.color || '#6B46C1',
       })
 
-      // ✅ Guardar duración en el estado
-      setDuration(videoData.duration || 0)
-
-      // Obtener progreso del estudiante
       const { data: progressData } = await ((supabase
         .from('progress') as any)
         .select('*')
@@ -173,10 +195,8 @@ export default function VideoPlayerPage() {
         .eq('video_id', videoId)
         .single()) as any
 
-      if (progressData) {
-        const progressPercentage = videoData.duration > 0
-          ? (progressData.last_position / videoData.duration) * 100
-          : 0
+      if (progressData && videoData.duration > 0) {
+        const progressPercentage = (progressData.last_position / videoData.duration) * 100
 
         setProgress({
           completed: progressData.completed || false,
@@ -184,13 +204,10 @@ export default function VideoPlayerPage() {
           progress_percentage: progressPercentage
         })
 
-        // Posicionar el video en el último punto visto
-        if (videoData.duration > 0) {
-          setPlayed(progressData.last_position / videoData.duration)
-        }
+        // Esperar a que el video esté listo para saltar
+        setCurrentTime(progressData.last_position)
       }
 
-      // Obtener lista de videos del curso
       const { data: allVideosData } = await ((supabase
         .from('videos') as any)
         .select('id, title, week, order_index')
@@ -200,7 +217,6 @@ export default function VideoPlayerPage() {
         .order('order_index', { ascending: true })
       ) as any
 
-      // Obtener progreso de todos los videos
       const { data: allProgressData } = await ((supabase
         .from('progress') as any)
         .select('video_id, completed')
@@ -226,15 +242,14 @@ export default function VideoPlayerPage() {
   }
 
   const saveProgress = async () => {
-    if (!userId || !videoId || !video) return
-
-    const currentTime = playerRef.current?.getCurrentTime?.() || 0
-    const videoDuration = duration || video.duration
-    const progressPercentage = videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0
-    const isCompleted = progressPercentage >= 90 // Marcar completado al 90%
+    if (!userId || !videoId || !video || !videoRef.current) return
 
     try {
-      // Verificar si ya existe un registro
+      const currentTime = videoRef.current.currentTime
+      const videoDuration = videoRef.current.duration || video.duration
+      const progressPercentage = videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0
+      const isCompleted = progressPercentage >= 90
+
       const { data: existing } = await ((supabase
         .from('progress') as any)
         .select('id')
@@ -242,32 +257,28 @@ export default function VideoPlayerPage() {
         .eq('video_id', videoId)
         .single()) as any
 
+      const progressUpdate = {
+        last_position: Math.floor(currentTime),
+        watch_time: Math.floor(currentTime),
+        completed: isCompleted,
+        last_watched_at: new Date().toISOString()
+      }
+
       if (existing) {
-        // Actualizar
         await ((supabase
           .from('progress') as any)
-          .update({
-            last_position: Math.floor(currentTime),
-            watch_time: Math.floor(currentTime),
-            completed: isCompleted,
-            last_watched_at: new Date().toISOString()
-          })
+          .update(progressUpdate)
           .eq('id', existing.id)) as any
       } else {
-        // Insertar
         await ((supabase
           .from('progress') as any)
           .insert({
+            ...progressUpdate,
             user_id: userId,
             video_id: videoId,
-            last_position: Math.floor(currentTime),
-            watch_time: Math.floor(currentTime),
-            completed: isCompleted,
-            last_watched_at: new Date().toISOString()
           })) as any
       }
 
-      // Actualizar estado local si se completó
       if (isCompleted && !progress.completed) {
         setProgress(prev => ({ ...prev, completed: true }))
       }
@@ -276,56 +287,96 @@ export default function VideoPlayerPage() {
     }
   }
 
-  const handleProgress = (state: any) => {
-    if (!seeking) {
-      setPlayed(state.played)
-      setProgress(prev => ({
-        ...prev,
-        last_position: state.playedSeconds,
-        progress_percentage: state.played * 100
-      }))
+  // ✅ Handlers del player HTML5
+  const handleLoadedMetadata = () => {
+    console.log('✅ Video metadata cargada')
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration)
+      // Saltar a última posición vista
+      if (progress.last_position > 0) {
+        videoRef.current.currentTime = progress.last_position
+      }
     }
   }
 
-  // Manejar cuando el reproductor esté listo y leer la duración real
-  const handleReady = () => {
-    const src = video?.video_url
-    console.log('[VideoPlayer] onReady — src:', src)
-    const d = playerRef.current?.getDuration?.() || 0
-    console.log('[VideoPlayer] duration read from player:', d)
-    if (d) setDuration(d)
+  const handleTimeUpdate = () => {
+    if (videoRef.current && !seeking) {
+      setCurrentTime(videoRef.current.currentTime)
+    }
   }
 
-  const handlePlayerError = (e: any) => {
-    console.error('[VideoPlayer] player error:', e)
-  }
-
-  const handlePlayerPlay = () => {
-    console.log('[VideoPlayer] onPlay')
+  const handlePlay = () => {
     setPlaying(true)
   }
 
-  const handlePlayerPause = () => {
-    console.log('[VideoPlayer] onPause')
+  const handlePause = () => {
     setPlaying(false)
   }
 
+  const handleEnded = () => {
+    saveProgress()
+    const currentIndex = courseVideos.findIndex(v => v.id === videoId)
+    if (currentIndex < courseVideos.length - 1) {
+      handleNextVideo()
+    }
+  }
+
+  const togglePlayPause = () => {
+    if (!videoRef.current) return
+    
+    if (playing) {
+      videoRef.current.pause()
+    } else {
+      videoRef.current.play()
+    }
+  }
+
   const handleSeek = (value: number) => {
-    setPlayed(value / 100)
-    playerRef.current?.seekTo(value / 100)
+    if (!videoRef.current) return
+    const newTime = (value / 100) * duration
+    videoRef.current.currentTime = newTime
+    setCurrentTime(newTime)
   }
 
-  const handleSeekMouseDown = () => {
-    setSeeking(true)
+  const handleVolumeChange = (value: number) => {
+    setVolume(value)
+    if (videoRef.current) {
+      videoRef.current.volume = value
+    }
   }
 
-  const handleSeekMouseUp = (value: number) => {
-    setSeeking(false)
-    handleSeek(value)
+  const toggleMute = () => {
+    setMuted(!muted)
+    if (videoRef.current) {
+      videoRef.current.muted = !muted
+    }
+  }
+
+  const handlePlaybackRateChange = (rate: number) => {
+    setPlaybackRate(rate)
+    if (videoRef.current) {
+      videoRef.current.playbackRate = rate
+    }
+  }
+
+  const handleSkip = (seconds: number) => {
+    if (!videoRef.current) return
+    videoRef.current.currentTime += seconds
+  }
+
+  const toggleFullscreen = () => {
+    const container = document.querySelector('.video-container')
+    if (!container) return
+
+    if (!document.fullscreenElement) {
+      container.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
   }
 
   const navigateToVideo = (targetVideoId: string) => {
-    saveProgress() // Guardar antes de cambiar
+    saveProgress()
     router.push(`/estudiante/curso/${courseId}/video/${targetVideoId}`)
   }
 
@@ -344,6 +395,7 @@ export default function VideoPlayerPage() {
   }
 
   const formatTime = (seconds: number) => {
+    if (!seconds || isNaN(seconds)) return '0:00'
     const mins = Math.floor(seconds / 60)
     const secs = Math.floor(seconds % 60)
     return `${mins}:${secs.toString().padStart(2, '0')}`
@@ -383,11 +435,12 @@ export default function VideoPlayerPage() {
   const currentVideoIndex = courseVideos.findIndex(v => v.id === videoId)
   const hasPrevious = currentVideoIndex > 0
   const hasNext = currentVideoIndex < courseVideos.length - 1
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
 
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="max-w-[1800px] mx-auto">
-        {/* Header con breadcrumb */}
+        {/* Header */}
         <div className="bg-gray-800 border-b border-gray-700 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -421,37 +474,20 @@ export default function VideoPlayerPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
-          {/* Video player principal */}
+          {/* Video player */}
           <div className="lg:col-span-2 bg-black">
-            <div className="aspect-video relative">
-              <ReactPlayer
-                ref={playerRef}
-                url={video.video_url}
-                width="100%"
-                height="100%"
-                playing={playing}
-                volume={volume}
-                muted={muted}
-                playbackRate={playbackRate}
-                onProgress={handleProgress}
-                onReady={handleReady}
-                onError={handlePlayerError}
-                onPlay={handlePlayerPlay}
-                onPause={handlePlayerPause}
-                onEnded={() => {
-                  saveProgress()
-                  if (hasNext) {
-                    handleNextVideo()
-                  }
-                }}
-                controls={false}
-                config={({
-                  file: {
-                    attributes: {
-                      controlsList: 'nodownload'
-                    }
-                  }
-                } as any)}
+            <div className="aspect-video relative video-container">
+              {/* ✅ VIDEO HTML5 NATIVO */}
+              <video
+                ref={videoRef}
+                src={video.signed_url}
+                className="w-full h-full"
+                onLoadedMetadata={handleLoadedMetadata}
+                onTimeUpdate={handleTimeUpdate}
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onEnded={handleEnded}
+                crossOrigin="anonymous"
               />
 
               {/* Overlay de controles */}
@@ -462,10 +498,10 @@ export default function VideoPlayerPage() {
                     type="range"
                     min={0}
                     max={100}
-                    value={played * 100}
+                    value={progressPercentage}
                     onChange={(e) => handleSeek(Number(e.target.value))}
-                    onMouseDown={handleSeekMouseDown}
-                    onMouseUp={(e) => handleSeekMouseUp(Number(e.currentTarget.value))}
+                    onMouseDown={() => setSeeking(true)}
+                    onMouseUp={() => setSeeking(false)}
                     className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer range-slider"
                   />
                 </div>
@@ -473,16 +509,38 @@ export default function VideoPlayerPage() {
                 {/* Controles */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
+                    {/* Skip back */}
                     <button
-                      onClick={() => setPlaying(!playing)}
+                      onClick={() => handleSkip(-10)}
                       className="text-white hover:text-[#5BC0EB] transition-colors"
                     >
-                      <PlayCircle className="h-8 w-8" />
+                      <SkipBack className="h-6 w-6" />
                     </button>
 
+                    {/* Play/Pause */}
+                    <button
+                      onClick={togglePlayPause}
+                      className="text-white hover:text-[#5BC0EB] transition-colors"
+                    >
+                      {playing ? (
+                        <PauseCircle className="h-8 w-8" />
+                      ) : (
+                        <PlayCircle className="h-8 w-8" />
+                      )}
+                    </button>
+
+                    {/* Skip forward */}
+                    <button
+                      onClick={() => handleSkip(10)}
+                      className="text-white hover:text-[#5BC0EB] transition-colors"
+                    >
+                      <SkipForward className="h-6 w-6" />
+                    </button>
+
+                    {/* Volume */}
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setMuted(!muted)}
+                        onClick={toggleMute}
                         className="text-white hover:text-[#5BC0EB] transition-colors"
                       >
                         {muted || volume === 0 ? (
@@ -497,21 +555,22 @@ export default function VideoPlayerPage() {
                         max={1}
                         step={0.1}
                         value={volume}
-                        onChange={(e) => setVolume(Number(e.target.value))}
+                        onChange={(e) => handleVolumeChange(Number(e.target.value))}
                         className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
 
-                    {/* ✅ CORREGIDO: Usar el estado duration en lugar de getDuration() */}
+                    {/* Time */}
                     <div className="text-white text-sm">
-                      {formatTime(played * duration)} / {formatTime(duration)}
+                      {formatTime(currentTime)} / {formatTime(duration)}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4">
+                    {/* Playback rate */}
                     <select
                       value={playbackRate}
-                      onChange={(e) => setPlaybackRate(Number(e.target.value))}
+                      onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
                       className="bg-gray-700 text-white text-sm px-2 py-1 rounded border border-gray-600 focus:outline-none focus:border-[#5BC0EB]"
                     >
                       <option value={0.5}>0.5x</option>
@@ -522,17 +581,9 @@ export default function VideoPlayerPage() {
                       <option value={2}>2x</option>
                     </select>
 
+                    {/* Fullscreen */}
                     <button
-                      onClick={() => {
-                        const elem = document.querySelector('.aspect-video')
-                        if (elem) {
-                          if (document.fullscreenElement) {
-                            document.exitFullscreen()
-                          } else {
-                            elem.requestFullscreen()
-                          }
-                        }
-                      }}
+                      onClick={toggleFullscreen}
                       className="text-white hover:text-[#5BC0EB] transition-colors"
                     >
                       <Maximize className="h-5 w-5" />
@@ -542,14 +593,13 @@ export default function VideoPlayerPage() {
               </div>
             </div>
 
-            {/* Info del video y navegación */}
+            {/* Info del video */}
             <div className="bg-gray-800 p-6">
               <h1 className="text-2xl font-bold text-white mb-2">{video.title}</h1>
               {video.description && (
                 <p className="text-gray-300 mb-4">{video.description}</p>
               )}
 
-              {/* Navegación entre videos */}
               <div className="flex items-center justify-between pt-4 border-t border-gray-700">
                 <Button
                   onClick={handlePreviousVideo}
@@ -577,7 +627,7 @@ export default function VideoPlayerPage() {
             </div>
           </div>
 
-          {/* Lista de videos del curso */}
+          {/* Lista de videos */}
           <div className="bg-gray-800 border-l border-gray-700 overflow-y-auto max-h-screen">
             <div className="p-6 border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -625,7 +675,6 @@ export default function VideoPlayerPage() {
         </div>
       </div>
 
-      {/* CSS personalizado para el slider */}
       <style jsx global>{`
         .range-slider::-webkit-slider-thumb {
           appearance: none;
