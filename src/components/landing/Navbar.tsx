@@ -29,7 +29,7 @@ export default function Navbar() {
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] bg-clip-text text-transparent">
                 MedMind
               </h1>
-              <p className="text-xs text-gray-600">Academia Médica UPAO</p>
+              <p className="text-xs text-gray-600">Academia Médica</p>
             </div>
           </div>
 

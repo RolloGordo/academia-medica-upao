@@ -24,7 +24,7 @@ export default function AboutUs() {
     {
       icon: Shield,
       title: 'Calidad',
-      description: 'Todo nuestro contenido es revisado y respaldado por docentes especializados de la UPAO.'
+      description: 'Todo nuestro contenido es revisado y respaldado por profesionales médicos expertos.'
     }
   ]
 
@@ -43,42 +43,36 @@ export default function AboutUs() {
             
             <div className="space-y-4 text-lg text-gray-600 leading-relaxed">
               <p>
-                <strong className="text-gray-900">MedMind</strong> es la plataforma educativa líder 
-                diseñada específicamente para estudiantes de medicina de la Universidad Privada Antenor Orrego.
+                <strong className="text-gray-900">MedMind</strong> es una plataforma educativa 
+                diseñada específicamente para reforzar el conocimiento de estudiantes de los primeros ciclos de medicina.
               </p>
               
               <p>
                 Nuestro objetivo es revolucionar la forma en que los estudiantes aprenden medicina, 
                 proporcionando acceso a contenido de alta calidad, herramientas de seguimiento de progreso 
-                y recursos complementarios que facilitan el camino hacia la excelencia profesional.
+                que facilitan el camino hacia la excelencia profesional.
               </p>
               
               <p>
-                Trabajamos de la mano con los mejores docentes de la facultad para garantizar que 
+                Trabajamos con profesionales médicos expertos para garantizar que 
                 cada video, cada recurso y cada herramienta estén alineados con los más altos 
                 estándares académicos.
               </p>
             </div>
 
             {/* Estadísticas */}
-            <div className="grid grid-cols-3 gap-6 mt-10">
+            <div className="grid grid-cols-2 gap-6 mt-10">
               <div className="text-center">
                 <p className="text-4xl font-bold bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] bg-clip-text text-transparent">
-                  500+
-                </p>
-                <p className="text-sm text-gray-600 mt-1">Estudiantes</p>
-              </div>
-              <div className="text-center">
-                <p className="text-4xl font-bold bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] bg-clip-text text-transparent">
-                  32+
+                  5
                 </p>
                 <p className="text-sm text-gray-600 mt-1">Cursos</p>
               </div>
               <div className="text-center">
                 <p className="text-4xl font-bold bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] bg-clip-text text-transparent">
-                  1000+
+                  100%
                 </p>
-                <p className="text-sm text-gray-600 mt-1">Videos</p>
+                <p className="text-sm text-gray-600 mt-1">Online</p>
               </div>
             </div>
           </div>
@@ -113,16 +107,16 @@ export default function AboutUs() {
           </div>
         </div>
 
-        {/* Sección de UPAO */}
+        {/* Sección de Visión */}
         <div className="mt-20 text-center bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-12">
           <div className="max-w-3xl mx-auto">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Universidad Privada Antenor Orrego
+              Nuestra Visión
             </h3>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Orgullosamente parte de la familia UPAO, trabajamos para complementar la educación 
-              presencial con herramientas digitales que potencien el aprendizaje de nuestros estudiantes 
-              de medicina, preparándolos para los desafíos del mundo profesional.
+              Convertirnos en la plataforma líder de reforzamiento académico para estudiantes de medicina, 
+              proporcionando herramientas digitales que potencien el aprendizaje y preparen a los futuros 
+              profesionales para los desafíos del mundo médico.
             </p>
           </div>
         </div>

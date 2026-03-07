@@ -2,78 +2,35 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Clock, Video, TrendingUp } from 'lucide-react'
+import { Video } from 'lucide-react'
 
 export default function CoursesSection() {
   const courses = [
     {
-      title: 'Anatomía Humana',
-      description: 'Estudio completo de la estructura del cuerpo humano',
-      image: '/api/placeholder/400/250',
-      cycle: 'Ciclos 1-3',
-      videos: 24,
-      hours: 18,
-      color: '#EF4444',
-      category: 'Básico'
+      title: 'Locomotor',
+      description: 'Estudio del sistema locomotor humano, incluyendo huesos, articulaciones, músculos y su funcionamiento integrado.',
+      color: '#EF4444'
     },
     {
-      title: 'Fisiología',
-      description: 'Funcionamiento de los sistemas del cuerpo humano',
-      image: '/api/placeholder/400/250',
-      cycle: 'Ciclos 4-6',
-      videos: 28,
-      hours: 22,
-      color: '#3B82F6',
-      category: 'Intermedio'
+      title: 'Excretor',
+      description: 'Comprensión del sistema excretor, enfocándose en la función renal y los procesos de eliminación de desechos.',
+      color: '#3B82F6'
     },
     {
-      title: 'Bioquímica Médica',
-      description: 'Procesos químicos y moleculares en medicina',
-      image: '/api/placeholder/400/250',
-      cycle: 'Ciclos 2-4',
-      videos: 20,
-      hours: 16,
-      color: '#10B981',
-      category: 'Básico'
+      title: 'Bioquímica',
+      description: 'Procesos químicos y moleculares fundamentales en medicina y su aplicación clínica.',
+      color: '#10B981'
     },
     {
-      title: 'Histología',
-      description: 'Estudio microscópico de tejidos y células',
-      image: '/api/placeholder/400/250',
-      cycle: 'Ciclos 3-5',
-      videos: 22,
-      hours: 17,
-      color: '#8B5CF6',
-      category: 'Intermedio'
+      title: 'Casos I',
+      description: 'Análisis de casos clínicos reales para integrar conocimientos y desarrollar razonamiento médico.',
+      color: '#F59E0B'
     },
     {
-      title: 'Microbiología',
-      description: 'Estudio de microorganismos y enfermedades',
-      image: '/api/placeholder/400/250',
-      cycle: 'Ciclos 5-7',
-      videos: 26,
-      hours: 20,
-      color: '#F59E0B',
-      category: 'Avanzado'
-    },
-    {
-      title: 'Farmacología',
-      description: 'Medicamentos y su efecto en el organismo',
-      image: '/api/placeholder/400/250',
-      cycle: 'Ciclos 6-8',
-      videos: 30,
-      hours: 24,
-      color: '#EC4899',
-      category: 'Avanzado'
+      title: 'Biología Molecular',
+      description: 'Fundamentos moleculares de los procesos biológicos y su relevancia en la medicina moderna.',
+      color: '#8B5CF6'
     }
-  ]
-
-  const categories = [
-    { name: 'Todos', value: 'all' },
-    { name: 'Básico', value: 'Básico' },
-    { name: 'Intermedio', value: 'Intermedio' },
-    { name: 'Avanzado', value: 'Avanzado' }
   ]
 
   return (
@@ -92,20 +49,8 @@ export default function CoursesSection() {
             </span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Más de 32 cursos diseñados específicamente para la carrera de medicina en la UPAO
+            5 cursos diseñados para reforzar tu conocimiento en los primeros ciclos de medicina
           </p>
-        </div>
-
-        {/* Filtros (Opcional - simple) */}
-        <div className="flex justify-center gap-3 mb-12 flex-wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat.value}
-              className="px-6 py-2 rounded-full bg-white hover:bg-[#6B46C1] hover:text-white border-2 border-gray-200 hover:border-[#6B46C1] font-medium transition-all"
-            >
-              {cat.name}
-            </button>
-          ))}
         </div>
 
         {/* Grid de Cursos */}
@@ -121,14 +66,13 @@ export default function CoursesSection() {
               `}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              {/* Imagen */}
-              <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300">
-                {/* Placeholder - aquí irían las imágenes reales */}
+              {/* Imagen/Color Header */}
+              <div className="relative h-48 overflow-hidden">
                 <div 
                   className="w-full h-full flex items-center justify-center text-white text-4xl font-bold"
                   style={{ background: `linear-gradient(135deg, ${course.color}dd, ${course.color}99)` }}
                 >
-                  {course.title.split(' ')[0]}
+                  {course.title}
                 </div>
                 
                 {/* Overlay en hover */}
@@ -138,54 +82,36 @@ export default function CoursesSection() {
                     <p className="font-semibold">Ver Curso</p>
                   </div>
                 </div>
-
-                {/* Badge de categoría */}
-                <div className="absolute top-3 right-3">
-                  <Badge 
-                    className="text-white border-0"
-                    style={{ backgroundColor: course.color }}
-                  >
-                    {course.category}
-                  </Badge>
-                </div>
               </div>
 
               <CardContent className="p-6">
-                {/* Ciclo */}
-                <p className="text-sm text-gray-500 mb-2">{course.cycle}</p>
-
                 {/* Título */}
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#6B46C1] transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#6B46C1] transition-colors">
                   {course.title}
                 </h3>
 
                 {/* Descripción */}
-                <p className="text-gray-600 mb-4 line-clamp-2">
+                <p className="text-gray-600 leading-relaxed">
                   {course.description}
                 </p>
-
-                {/* Estadísticas */}
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Video className="h-4 w-4" />
-                    <span>{course.videos} videos</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{course.hours}h</span>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           ))}
-        </div>
 
-        {/* CTA para ver más */}
-        <div className="text-center">
-          <button className="px-8 py-4 bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] text-white font-semibold rounded-xl hover:opacity-90 transition-all shadow-lg hover:shadow-xl">
-            Ver Todos los Cursos
-            <TrendingUp className="inline-block ml-2 h-5 w-5" />
-          </button>
+          {/* Card vacía para balance visual */}
+          <Card
+            className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center min-h-[300px] animate-fade-in-up"
+            style={{ animationDelay: '500ms' }}
+          >
+            <div className="text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#6B46C1] to-[#5BC0EB] flex items-center justify-center">
+                <span className="text-3xl text-white">+</span>
+              </div>
+              <p className="text-gray-600 font-medium">
+                Más cursos próximamente
+              </p>
+            </div>
+          </Card>
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
 // src/components/landing/Features.tsx
 'use client'
 
-import { Video, Users, TrendingUp, Clock, CheckCircle2, Award } from 'lucide-react'
+import { Video, TrendingUp, Clock } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 
 export default function Features() {
@@ -9,7 +9,7 @@ export default function Features() {
     {
       icon: Video,
       title: 'Videos de Alta Calidad',
-      description: 'Contenido educativo grabado por los mejores docentes de la UPAO, disponible 24/7.',
+      description: 'Contenido educativo grabado por profesionales médicos expertos, disponible 24/7.',
       gradient: 'from-purple-500 to-purple-600'
     },
     {
@@ -19,28 +19,10 @@ export default function Features() {
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
-      icon: Users,
-      title: 'Grupos de Estudio',
-      description: 'Conecta con otros estudiantes, comparte conocimientos y prepárense juntos.',
-      gradient: 'from-cyan-500 to-teal-500'
-    },
-    {
       icon: Clock,
       title: 'Aprende a Tu Ritmo',
-      description: 'Accede al contenido cuando quieras, donde quieras. Sin horarios fijos.',
+      description: 'Accede al contenido cuando quieras, donde quieras. 100% online, sin horarios fijos.',
       gradient: 'from-orange-500 to-red-500'
-    },
-    {
-      icon: CheckCircle2,
-      title: 'Materiales Complementarios',
-      description: 'Descarga presentaciones, PDFs y recursos adicionales para reforzar tu aprendizaje.',
-      gradient: 'from-green-500 to-emerald-500'
-    },
-    {
-      icon: Award,
-      title: 'Certificados',
-      description: 'Obtén certificados al completar cursos y destaca en tu carrera profesional.',
-      gradient: 'from-pink-500 to-rose-500'
     }
   ]
 

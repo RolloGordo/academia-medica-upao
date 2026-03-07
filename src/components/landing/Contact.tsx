@@ -2,7 +2,7 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { MessageCircle, Mail, MapPin, Phone } from 'lucide-react'
+import { MessageCircle, Mail } from 'lucide-react'
 
 export default function Contact() {
   const contactInfo = [
@@ -19,20 +19,6 @@ export default function Contact() {
       value: 'contacto@medmind.pe',
       link: 'mailto:contacto@medmind.pe',
       color: 'from-blue-500 to-blue-600'
-    },
-    {
-      icon: MapPin,
-      title: 'Ubicación',
-      value: 'UPAO - Trujillo, Perú',
-      link: '#',
-      color: 'from-purple-500 to-purple-600'
-    },
-    {
-      icon: Phone,
-      title: 'Teléfono',
-      value: '+51 44 604100',
-      link: 'tel:+5144604100',
-      color: 'from-cyan-500 to-cyan-600'
     }
   ]
 
@@ -57,7 +43,7 @@ export default function Contact() {
         </div>
 
         {/* Cards de Contacto */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto mb-12">
           {contactInfo.map((info, index) => (
             <a
               key={info.title}
@@ -68,17 +54,17 @@ export default function Contact() {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <Card className="h-full border-2 border-gray-100 hover:border-[#6B46C1] hover:shadow-xl transition-all group cursor-pointer bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-6 text-center">
+                <CardContent className="p-8 text-center">
                   <div className={`
-                    inline-flex p-4 rounded-2xl bg-gradient-to-r ${info.color} mb-4
+                    inline-flex p-5 rounded-2xl bg-gradient-to-r ${info.color} mb-4
                     group-hover:scale-110 transition-transform
                   `}>
-                    <info.icon className="h-8 w-8 text-white" />
+                    <info.icon className="h-10 w-10 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {info.title}
                   </h3>
-                  <p className="text-gray-600 group-hover:text-[#6B46C1] transition-colors">
+                  <p className="text-lg text-gray-600 group-hover:text-[#6B46C1] transition-colors font-medium">
                     {info.value}
                   </p>
                 </CardContent>
@@ -90,13 +76,13 @@ export default function Contact() {
         {/* CTA Final */}
         <div 
           className="bg-gradient-to-r from-[#6B46C1] to-[#5BC0EB] rounded-3xl p-12 text-center text-white shadow-2xl animate-fade-in-up"
-          style={{ animationDelay: '400ms' }}
+          style={{ animationDelay: '200ms' }}
         >
           <h3 className="text-3xl font-bold mb-4">
             ¿Listo para comenzar tu camino hacia la excelencia?
           </h3>
           <p className="text-xl mb-8 opacity-90">
-            Únete a cientos de estudiantes que ya están transformando su educación médica
+            Refuerza tu conocimiento médico con MedMind
           </p>
           <a 
             href="https://wa.me/51937788854?text=Hola,%20quiero%20más%20información%20sobre%20MedMind"

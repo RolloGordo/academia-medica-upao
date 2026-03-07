@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { GraduationCap, Facebook, Instagram, Youtube, Mail } from 'lucide-react'
+import { GraduationCap, Mail } from 'lucide-react'
 
 export default function Footer() {
   const links = {
@@ -16,11 +16,6 @@ export default function Footer() {
       { name: 'Términos y Condiciones', href: '#' },
       { name: 'Política de Privacidad', href: '#' },
       { name: 'Política de Cookies', href: '#' },
-    ],
-    social: [
-      { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/medmind', color: '#1877F2' },
-      { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/medmind', color: '#E4405F' },
-      { name: 'YouTube', icon: Youtube, href: 'https://youtube.com/medmind', color: '#FF0000' },
     ]
   }
 
@@ -37,28 +32,13 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="text-2xl font-bold">MedMind</h3>
-                <p className="text-sm text-white/80">Academia Médica UPAO</p>
+                <p className="text-sm text-white/80">Academia Médica</p>
               </div>
             </div>
-            <p className="text-white/80 text-sm leading-relaxed mb-4">
-              Estamos ayudando a la nueva generación de profesionales en medicina 
-              a alcanzar la excelencia académica.
+            <p className="text-white/80 text-sm leading-relaxed">
+              Plataforma educativa para reforzar el conocimiento de estudiantes 
+              de los primeros ciclos de medicina.
             </p>
-            {/* Redes Sociales */}
-            <div className="flex gap-3">
-              {links.social.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
-                  title={social.name}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Columna 2: Páginas */}
@@ -114,8 +94,7 @@ export default function Footer() {
                 </a>
               </li>
               <li className="text-white/80">
-                Universidad Privada Antenor Orrego<br />
-                Trujillo, Perú
+                100% Online
               </li>
             </ul>
           </div>
@@ -125,12 +104,9 @@ export default function Footer() {
         <div className="border-t border-white/20" />
 
         {/* Copyright */}
-        <div className="py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/80">
+        <div className="py-6 text-center text-sm text-white/80">
           <p>
             © 2025 MedMind. Todos los derechos reservados.
-          </p>
-          <p>
-            Desarrollado con ❤️ para estudiantes de medicina UPAO
           </p>
         </div>
       </div>

@@ -2,7 +2,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Play, Star, Users } from 'lucide-react'
+import { ArrowRight, Play, Star } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Hero() {
@@ -24,7 +24,7 @@ export default function Hero() {
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border-2 border-[#6B46C1]/20 mb-6">
               <Star className="h-4 w-4 text-[#FDB833] fill-[#FDB833]" />
               <span className="text-sm font-semibold text-gray-700">
-                Academia Médica #1 de UPAO
+                Academia Médica #1
               </span>
             </div>
 
@@ -43,29 +43,28 @@ export default function Hero() {
 
             {/* Descripción */}
             <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
-              Plataforma educativa diseñada para estudiantes de medicina de la UPAO. 
-              Aprende con videos de alta calidad, seguimiento de progreso y el respaldo 
-              de los mejores docentes.
+              Plataforma educativa diseñada para estudiantes de los primeros ciclos de medicina. 
+              Refuerza tu conocimiento con videos de alta calidad y el respaldo de profesionales médicos expertos.
             </p>
 
             {/* Estadísticas */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-[#6B46C1]/10 rounded-lg">
-                  <Users className="h-5 w-5 text-[#6B46C1]" />
-                </div>
-                <div className="text-left">
-                  <p className="text-2xl font-bold text-gray-900">500+</p>
-                  <p className="text-sm text-gray-600">Estudiantes</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
                 <div className="p-2 bg-[#5BC0EB]/10 rounded-lg">
                   <Play className="h-5 w-5 text-[#5BC0EB]" />
                 </div>
                 <div className="text-left">
-                  <p className="text-2xl font-bold text-gray-900">32+</p>
+                  <p className="text-2xl font-bold text-gray-900">5</p>
                   <p className="text-sm text-gray-600">Cursos</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-[#6B46C1]/10 rounded-lg">
+                  <Star className="h-5 w-5 text-[#6B46C1]" />
+                </div>
+                <div className="text-left">
+                  <p className="text-2xl font-bold text-gray-900">100%</p>
+                  <p className="text-sm text-gray-600">Online</p>
                 </div>
               </div>
             </div>
@@ -103,13 +102,12 @@ export default function Hero() {
               <div className="w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#6B46C1]/20 to-[#5BC0EB]/20 blur-3xl" />
             </div>
 
-            {/* Imagen principal (placeholder) */}
+            {/* Imagen principal */}
             <div className="relative z-10">
               <div className="relative w-[550px] h-[550px] mx-auto">
                 {/* Círculo con gradiente */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#6B46C1] to-[#5BC0EB] p-2">
                   <div className="w-full h-full rounded-full bg-white p-4">
-                    {/* Aquí iría la imagen del estudiante/doctor */}
                     <div className="w-full h-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                       <div className="text-center">
                         <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#6B46C1] to-[#5BC0EB] flex items-center justify-center">
@@ -129,7 +127,7 @@ export default function Hero() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-900">Excelente</p>
-                      <p className="text-xs text-gray-600">Calificación</p>
+                      <p className="text-xs text-gray-600">Contenido</p>
                     </div>
                   </div>
                 </div>
@@ -143,8 +141,8 @@ export default function Hero() {
                       <Play className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">100+ Videos</p>
-                      <p className="text-xs text-gray-600">Disponibles</p>
+                      <p className="text-sm font-semibold text-gray-900">100% Online</p>
+                      <p className="text-xs text-gray-600">Disponible</p>
                     </div>
                   </div>
                 </div>
