@@ -4,6 +4,7 @@
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Play, Star } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Hero() {
   return (
@@ -92,7 +93,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Imagen Derecha */}
+          {/* Imagen Derecha - CON FOTO REAL */}
           <div 
             className="relative animate-fade-in-up lg:block hidden"
             style={{ animationDelay: '200ms' }}
@@ -108,13 +109,16 @@ export default function Hero() {
                 {/* Círculo con gradiente */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#6B46C1] to-[#5BC0EB] p-2">
                   <div className="w-full h-full rounded-full bg-white p-4">
-                    <div className="w-full h-full rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#6B46C1] to-[#5BC0EB] flex items-center justify-center">
-                          <GraduationCap className="h-16 w-16 text-white" />
-                        </div>
-                        <p className="text-gray-600 font-medium">Tu Foto Aquí</p>
-                      </div>
+                    {/* IMAGEN DEL DOCTOR */}
+                    <div className="w-full h-full rounded-full overflow-hidden">
+                      <Image
+                        src="/images/doctor-new.png"
+                        alt="Profesional Médico MedMind"
+                        width={550}
+                        height={550}
+                        className="w-full h-full object-cover"
+                        priority
+                      />
                     </div>
                   </div>
                 </div>
@@ -164,5 +168,3 @@ export default function Hero() {
     </section>
   )
 }
-
-import { GraduationCap } from 'lucide-react'

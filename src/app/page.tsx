@@ -1,6 +1,7 @@
 // src/app/page.tsx
 // Landing Page Principal - MedMind
 
+import React from 'react'
 import Navbar from '@/components/landing/Navbar'
 import Hero from '@/components/landing/Hero'
 import Features from '@/components/landing/Features'
